@@ -45,7 +45,6 @@ sql = """INSERT INTO users
 # con.commit()
 # c.execute(passwords)
 # con.commit()
-#c.execute(sql,("pst","superplams@gmail.com",b'$2b$12$3cjpDz8KA6MKz0NcTyDltegAxvMu2AazGISQ/8j3NT/qgMYg0BWJ6'))
 #con.commit()
 # c.execute(passwords)
 

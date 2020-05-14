@@ -15,41 +15,34 @@ con = sqlite3.connect('database.db')
 ##fix this
 username = input("Enter your username: \n")
 password = input("Enter your pass: \n")
-#while (True):
+
 foundUser = new_password.get_user(con,username)
-if (foundUser[0] == username):
+foundUser_id = foundUser[0]
+foundUser_username = foundUser[1]
+foundUser_password = foundUser[2]
+
+if (foundUser_username == username):
     #turn password string into a byte string
-    if (bcrypt.checkpw(password.encode(), foundUser[1])):
-        print("fuck yes")
+    if (bcrypt.checkpw(password.encode(), foundUser_password)):
+        os.system('clear')
+        while(True):
+            #os.system('clear')
+            print("Welcome ladies and gents")
+            print("Commands: ")
+            print("a = see all passwords")
+            print("n = add new password")
+            print("d = delete password")
+            print("q = quit")
 
-# while username == new_password.get_user(con,username):
-#     os.system('clear')
-#     print("")
-#     #connect = input("Wrong password, please try again: \n")
-#     if connect == 'q' : break
-
-
-# new_password.view_all_users(con)
-# new_password.view_all(con)
-
-# while(True):
-#     #os.system('clear')
-#     print("Welcome ladies and gents")
-#     print("Commands: ")
-#     print("a = see all passwords")
-#     print("n = add new password")
-#     print("d = delete password")
-#     print("q = quit")
-
-#     userInput = input("Enter command: ")
-#     if userInput == 'a':
-#         new_password.view_all(con)
-#     elif userInput == 'n':
-#         site = input("Enter website: \n")
-#         user = input("Enter username/email: \n")
-#         new = new_password.create(con,site,user)
-#         print(new)
-#     elif userInput == 'd':
-#         pass
-#     elif userInput == 'q':
-#         break
+            userInput = input("Enter command: ")
+            if userInput == 'a':
+                new_password.view_all(con,foundUser_id)
+            elif userInput == 'n':
+                site = input("Enter website: \n")
+                user = input("Enter username/email: \n")
+                new = new_password.add_password(con,site,user,foundUser_id)
+                print(new)
+            elif userInput == 'd':
+                pass
+            elif userInput == 'q':
+                break
