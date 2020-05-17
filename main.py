@@ -1,48 +1,60 @@
 import sqlite3
-import os
-import new_password
-import bcrypt
+import os,sys,re
+import bcrypt,getpass
+import setup,dal
 
-# ADMIN_PASSWORD = "admin"
+sys.path.append(os.path.realpath("."))
 
-# os.system('clear')
-con = sqlite3.connect('database.db')
+import inquirer
+from inquirer import errors
 
-#new_password.get_user(con,"pst")
-#user = new_password.get_user(con,"pst")
-#print(user)
+database = r"/Users/pst/Desktop/py-env/ppass/database.db"
+con = setup.create_connection(database)
 
-##fix this
-username = input("Enter your username: \n")
-password = input("Enter your pass: \n")
+login = inquirer.confirm(message= "Do you have an account", default=True)
 
-foundUser = new_password.get_user(con,username)
-foundUser_id = foundUser[0]
-foundUser_username = foundUser[1]
-foundUser_password = foundUser[2]
+if (login):
+    pass
+else:
+    username = inquirer.text(message="Enter your username")
+    #todo email validation
+    email = inquirer.text( message="Enter your email")
+    parola = getpass.getpass()
 
-if (foundUser_username == username):
+    dal.add_user(con,username,email,parola.encode())
+
+
+username = inquirer.text(message="Enter your username")
+password = getpass.getpass()
+
+foundUser = dal.get_user(con,username)
+
+if (foundUser['username'] == username):
     #turn password string into a byte string
-    if (bcrypt.checkpw(password.encode(), foundUser_password)):
+    if (bcrypt.checkpw(password.encode(), foundUser['password'])):
         os.system('clear')
-        while(True):
-            #os.system('clear')
-            print("Welcome ladies and gents")
-            print("Commands: ")
-            print("a = see all passwords")
-            print("n = add new password")
-            print("d = delete password")
-            print("q = quit")
+        print("Welcome ladies and gents")
+        q = [
+            inquirer.List('commands',
+                  message='What are you interested in?',
+                  choices=['see all passwords', 'add new password','quit'],
+                  )]
 
-            userInput = input("Enter command: ")
-            if userInput == 'a':
-                new_password.view_all(con,foundUser_id)
-            elif userInput == 'n':
-                site = input("Enter website: \n")
-                user = input("Enter username/email: \n")
-                new = new_password.add_password(con,site,user,foundUser_id)
-                print(new)
-            elif userInput == 'd':
-                pass
-            elif userInput == 'q':
+        while(True):
+            print("\n")
+            a = inquirer.prompt(q)
+            if a['commands'] == 'see all passwords':
+                dal.get_all_passwords(con,foundUser['id'])
+            elif a['commands'] == 'add new password':
+                site = inquirer.text(message="Enter the name of the website")
+                foundSite = dal.get_site(con,foundUser['id'],site)
+                print(foundSite)
+                # user = inquirer.text(message="Enter username/email")
+                # new = dal.add_password(con,site,user,foundUser['id'])
+                # print("\n",new)
+            # elif a['commands'] == 'delete password':
+            #     to_delete = input("Enter password id: \n")
+            #     dal.delete_pass(con,to_delete)
+            elif a['commands'] == 'quit':
                 break
+    
