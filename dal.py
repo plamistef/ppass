@@ -67,8 +67,8 @@ def add_user(con,username,email,password):
 
 def get_site(con,user_id,site):
     c = con.cursor()
-    sql = "SELECT site,user,password FROM passwords WHERE site=?"
-    c.execute(sql,(site,))
+    sql = "SELECT site,user,password FROM passwords WHERE site=? AND user_id=?"
+    c.execute(sql,(site,user_id))
 
     result = c.fetchall()
     for row in result:
