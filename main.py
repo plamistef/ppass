@@ -29,7 +29,6 @@ else:
 print("Login")
 username = inquirer.text(message="Enter your username")
 password = getpass.getpass()
-
 foundUser = dal.get_user(con,username)
 
 if (foundUser['username'] == username):
@@ -39,15 +38,15 @@ if (foundUser['username'] == username):
         print("Welcome ladies and gents")
         q = [
             inquirer.List('commands',
-                  message='What are you interested in?',
-                  choices=['see all passwords', 'add new password','quit'],
-                  )]
+                message='What are you interested in?',
+                choices=['see all passwords', 'add new password','quit'],
+                )]
 
         while(True):
             print("\n")
             a = inquirer.prompt(q)
             if a['commands'] == 'see all passwords':
-                dal.get_all_passwords(con,foundUser['id'])
+                dal.get_all_passwords(con,foundUser['id'],password)
             elif a['commands'] == 'add new password':
                 site = inquirer.text(message="Enter the name of the website")
                 foundSite = dal.get_site(con,foundUser['id'],site)
@@ -55,7 +54,7 @@ if (foundUser['username'] == username):
                     print("You have already created a password for this website")                        
                 else:  
                     user = inquirer.text(message="Enter username/email")
-                    new = dal.add_password(con,site,user,foundUser['id'])
+                    new = dal.add_password(con,site,user,foundUser['id'],password)
                     print("\n",new)
             # elif a['commands'] == 'delete password':
             #     to_delete = input("Enter password id: \n")
