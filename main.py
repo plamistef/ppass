@@ -1,14 +1,14 @@
 import sqlite3
-import os,sys,re
+import os,sys
 import bcrypt,getpass
-import setup,dal
+import setup,dal,menu
 
 sys.path.append(os.path.realpath("."))
 
 import inquirer
 from inquirer import errors
 
-database = "/Users/pst/Desktop/py-env/ppass/database.db"
+database = "./database.db"
 con = setup.create_connection(database)
 
 login = inquirer.confirm(message= "Do you have an account", default=True)
@@ -28,39 +28,22 @@ else:
 
 print("Login")
 username = inquirer.text(message="Enter your username")
-password = getpass.getpass()
 foundUser = dal.get_user(con,username)
+password = getpass.getpass()
 
-if (foundUser['username'] == username):
-    #turn password string into a byte string
-    if (bcrypt.checkpw(password.encode(), foundUser['password'])):
-        os.system('clear')
-        print("Welcome ladies and gents")
-        q = [
-            inquirer.List('commands',
-                message='What are you interested in?',
-                choices=['see all passwords', 'add a new password','delete a password','quit'],
-                )]
-
-        while(True):
-            print("\n")
-            a = inquirer.prompt(q)
-            if a['commands'] == 'see all passwords':
-                dal.get_all_passwords(con,foundUser['id'],password)
-            elif a['commands'] == 'add a new password':
-                site = inquirer.text(message="Enter the name of the website")
-                foundSite = dal.get_site(con,foundUser['id'],site)
-                if(foundSite != None):
-                    print("You have already created a password for this website")                        
-                else:  
-                    user = inquirer.text(message="Enter username/email")
-                    new = dal.add_password(con,site,user,foundUser['id'],password)
-                    print("\n",new)
-            elif a['commands'] == 'delete a password':
-                dal.get_all_passwords(con,foundUser['id'],password)
-                #to_delete = input("\nEnter #password id: \n")
-                to_delete = inquirer.text(message="Enter password id")
-                dal.delete_pass(con,to_delete)
-            elif a['commands'] == 'quit':
-                break
+try: 
+    if(foundUser['username'] == username):
+        
+        #turn password string into a byte string
+        if (bcrypt.checkpw(password.encode(), foundUser['password'])):
+            os.system('clear')
+            print("Welcome ladies and gents")
+            menu.menu(con,foundUser,password)
+        else:
+            print("try harder")
+except:
+    print("sorry try again")
     
+
+
+
