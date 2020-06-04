@@ -6,21 +6,19 @@ from cryptography.fernet import Fernet
 import base64
 
 
-def cipher_pass(password, main_pass):
-
+def create_suite(password, main_pass):
     padded_str = main_pass.ljust(32, '=') 
     key = base64.urlsafe_b64encode(padded_str.encode()) 
-
     cipher_suite = Fernet(key)
-    ciphered_text = cipher_suite.encrypt(password.encode())
+    return cipher_suite
 
+def cipher_pass(password, main_pass):
+    cipher_suite = create_suite(password,main_pass)
+    ciphered_text = cipher_suite.encrypt(password.encode())
     return ciphered_text
 
 def decipher_pass(password, main_pass):
-    padded_str = main_pass.ljust(32, '=') 
-    key = base64.urlsafe_b64encode(padded_str.encode())
-
-    cipher_suite = Fernet(key)
+    cipher_suite = create_suite(password,main_pass)
     unciphered_text = cipher_suite.decrypt(password)
     return unciphered_text
 
@@ -49,7 +47,6 @@ def get_all_passwords(con,user_id,main_pass):
 
     result = c.fetchall()
     for row in result:
-        #deciphered = row[]
         password = {"id":row[0],"site":row[1],"user":row[2],"password":decipher_pass(row[3],main_pass).decode()}
         print(password)
 
@@ -83,6 +80,7 @@ def delete_pass(con,id):
 
 def add_user(con,username,email,password):
     c = con.cursor()
+    
     sql = "INSERT INTO users (username,email,password) VALUES (?,?,?)"
     hashed = bcrypt.hashpw(password,bcrypt.gensalt())
     c.execute(sql,(username.lower(),email.lower(),hashed))

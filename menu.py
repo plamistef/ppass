@@ -4,6 +4,11 @@ sys.path.append(os.path.realpath("."))
 import inquirer
 from inquirer import errors
 
+"""
+    The internal menu after the user logs in.
+    The user can choose to see, add or delete passwords.
+"""
+
 def menu(con,foundUser,password):
     q = [
             inquirer.List('commands',
@@ -26,7 +31,6 @@ def menu(con,foundUser,password):
                     print("\n",new)
             elif a['commands'] == 'delete a password':
                 dal.get_all_passwords(con,foundUser['id'],password)
-                #to_delete = input("\nEnter #password id: \n")
                 to_delete = inquirer.text(message="Enter password id")
                 dal.delete_pass(con,to_delete)
             elif a['commands'] == 'quit':
