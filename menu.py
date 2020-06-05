@@ -4,13 +4,14 @@ sys.path.append(os.path.realpath("."))
 import inquirer
 from inquirer import errors
 
-""" The internal menu after the user logs in.
+
+
+def menu(con,foundUser,password):
+    """ The internal menu after the user logs in.
     The user can choose to see, add or delete passwords.
     :param con, foundUser, password: db connection, the logged in user, their password
     :return: None
 """
-
-def menu(con,foundUser,password):
     q = [
             inquirer.List('commands',
                 message='What are you interested in?',
